@@ -1,6 +1,6 @@
 package hashmap;
 
-import java.util.Collection;
+import java.util.*;
 
 /**
  *  A hash table-backed Map implementation.
@@ -9,7 +9,6 @@ import java.util.Collection;
  *  @author YOUR NAME HERE
  */
 public class MyHashMap<K, V> implements Map61B<K, V> {
-
     /**
      * Protected helper class to store key/value pairs
      * The protected qualifier allows subclass access
@@ -26,12 +25,31 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
 
     /* Instance Variables */
     private Collection<Node>[] buckets;
-    // You should probably define some more!
+    private int initialCapacity;
+    private double loadFactor;
+    private int size;
 
     /** Constructors */
-    public MyHashMap() { }
+    public MyHashMap() {
+        // Java's built-in HashMap settings
+        this.size = 0;
+        this.initialCapacity = 16;
+        this.loadFactor = 0.75;
+        buckets = new Collection[this.initialCapacity];
+        for (int i = 0; i < this.initialCapacity; i++) {
+            buckets[i] = createBucket();
+        }
+    }
 
-    public MyHashMap(int initialCapacity) { }
+    public MyHashMap(int initialCapacity) {
+        this.size = 0;
+        this.initialCapacity = initialCapacity;
+        this.loadFactor = 0.75;
+        buckets = new Collection[this.initialCapacity];
+        for (int i = 0; i < this.initialCapacity; i++) {
+            buckets[i] = createBucket();
+        }
+    }
 
     /**
      * MyHashMap constructor that creates a backing array of initialCapacity.
@@ -40,7 +58,15 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      * @param initialCapacity initial size of backing array
      * @param loadFactor maximum load factor
      */
-    public MyHashMap(int initialCapacity, double loadFactor) { }
+    public MyHashMap(int initialCapacity, double loadFactor) {
+        this.size = 0;
+        this.initialCapacity = initialCapacity;
+        this.loadFactor = loadFactor;
+        buckets = new Collection[this.initialCapacity];
+        for (int i = 0; i < this.initialCapacity; i++) {
+            buckets[i] = createBucket();
+        }
+    }
 
     /**
      * Returns a data structure to be a hash table bucket
@@ -63,11 +89,105 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      * OWN BUCKET DATA STRUCTURES WITH THE NEW OPERATOR!
      */
     protected Collection<Node> createBucket() {
-        // TODO: Fill in this method.
+        // 1st choice: LinkedList
+        return new LinkedList<>();
+        // 2nd choice: ArrayList
+        // return new ArrayList<>();
+    }
+
+    @Override
+    public void put(K key, V value) {
+        int hashCode = key.hashCode();
+        int destBucketIndex = Math.floorMod(hashCode, this.initialCapacity);
+        Collection<Node> destBucket = buckets[destBucketIndex];
+        if (!containsKey(key)) {
+            // do have to increase size by 1
+            Node newNode = new Node(key, value);
+            destBucket.add(newNode);
+            size += 1;
+        } else {
+            // do not have to modify size
+            for (Node n: destBucket) {
+                if (key.equals(n.key)) {
+                    n.value = value;
+                    break;
+                }
+            }
+        }
+        double currentLoadFactor = this.size * 1.0 / this.initialCapacity;
+        if (currentLoadFactor > this.loadFactor) {
+            resize(this.initialCapacity * 2);
+        }
+    }
+
+    private void resize(int newCapacity) {
+        Collection<Node>[] newBuckets = new Collection[newCapacity];
+        for (int i = 0; i < newCapacity; i++) {
+            newBuckets[i] = createBucket();
+        }
+        for (int i = 0; i < this.initialCapacity; i++) {
+            Collection<Node> currentBucket = this.buckets[i];
+            for (Node n: currentBucket) {
+                int hashCode = n.key.hashCode();
+                int destBucketIndex = Math.floorMod(hashCode, newCapacity);
+                newBuckets[destBucketIndex].add(n);
+            }
+        }
+        this.initialCapacity = newCapacity;
+        this.buckets = newBuckets;
+    }
+
+    @Override
+    public V get(K key) {
+        if (containsKey(key)) {
+            int hashCode = key.hashCode();
+            int bucketIndex = Math.floorMod(hashCode, this.initialCapacity);
+            for (Node n : this.buckets[bucketIndex]) {
+                if (key.equals(n.key)) {
+                    return n.value;
+                }
+            }
+        }
         return null;
     }
 
-    // TODO: Implement the methods of the Map61B Interface below
-    // Your code won't compile until you do so!
+    @Override
+    public boolean containsKey(K key) {
+        int hashCode = key.hashCode();
+        int bucketIndex = Math.floorMod(hashCode, this.initialCapacity);
+        for (Node n: this.buckets[bucketIndex]) {
+            if (key.equals(n.key)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
+    @Override
+    public int size() {
+        return size;
+    }
+
+    @Override
+    public void clear() {
+        for (int i = 0; i < this.initialCapacity; i++) {
+            buckets[i].clear();
+        }
+        size = 0;
+    }
+
+    @Override
+    public Set<K> keySet() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public V remove(K key) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Iterator<K> iterator() {
+        throw new UnsupportedOperationException();
+    }
 }
