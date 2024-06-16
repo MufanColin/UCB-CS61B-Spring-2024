@@ -50,7 +50,9 @@ public class RedBlackTree<T extends Comparable<T>> {
      * @param node
      */
     void flipColors(RBTreeNode<T> node) {
-        // TODO: YOUR CODE HERE
+        node.isBlack = !node.isBlack; // we assume that node is not null
+        node.left.isBlack = !node.left.isBlack; // we assume that node has left children
+        node.right.isBlack = !node.right.isBlack; // we assume that node has right children
     }
 
     /**
@@ -61,8 +63,16 @@ public class RedBlackTree<T extends Comparable<T>> {
      * @return
      */
     RBTreeNode<T> rotateRight(RBTreeNode<T> node) {
-        // TODO: YOUR CODE HERE
-        return null;
+        // What will happen if node.left == null?
+        RBTreeNode<T> newSubtreeRoot = node.left;
+        boolean colorCopy = node.isBlack;
+        node.isBlack = newSubtreeRoot.isBlack;
+        newSubtreeRoot.isBlack = colorCopy;
+        RBTreeNode<T> oldRoot = node;
+        node = newSubtreeRoot;
+        oldRoot.left = node.right;
+        node.right = oldRoot;
+        return newSubtreeRoot;
     }
 
     /**
@@ -73,8 +83,16 @@ public class RedBlackTree<T extends Comparable<T>> {
      * @return
      */
     RBTreeNode<T> rotateLeft(RBTreeNode<T> node) {
-        // TODO: YOUR CODE HERE
-        return null;
+        // What will happen if node.right == null?
+        RBTreeNode<T> newSubtreeRoot = node.right;
+        boolean colorCopy = node.isBlack;
+        node.isBlack = newSubtreeRoot.isBlack;
+        newSubtreeRoot.isBlack = colorCopy;
+        RBTreeNode<T> oldRoot = node;
+        node = newSubtreeRoot;
+        oldRoot.right = node.left;
+        node.left = oldRoot;
+        return newSubtreeRoot;
     }
 
     /**
@@ -105,17 +123,30 @@ public class RedBlackTree<T extends Comparable<T>> {
      * @return
      */
     private RBTreeNode<T> insert(RBTreeNode<T> node, T item) {
-        // TODO: Insert (return) new red leaf node.
-
-        // TODO: Handle normal binary search tree insertion.
-
-        // TODO: Rotate left operation
-
-        // TODO: Rotate right operation
-
-        // TODO: Color flip
-
-        return null; //fix this return statement
+        // Insert (return) new red leaf node.
+        if (node == null) {
+            return new RBTreeNode<>(false, item);
+        }
+        int cmp = item.compareTo(node.item);
+        // Handle normal binary search tree insertion.
+        if (cmp < 0) {
+            node.left = insert(node.left, item);
+        } else if (cmp > 0){
+            node.right = insert(node.right, item);
+        }
+        // Rotate left operation (right leaning -> left leaning)
+        if (isRed(node.right) && !isRed(node.left)) {
+            node = rotateLeft(node);
+        }
+        // Rotate right operation (2 left learning)
+        if (isRed(node.left) && isRed(node.left.left)) {
+            node = rotateRight(node);
+        }
+        // Color flip
+        if (isRed(node.left) && isRed(node.right)) {
+            flipColors(node);
+        }
+        return node;
     }
 
 }
