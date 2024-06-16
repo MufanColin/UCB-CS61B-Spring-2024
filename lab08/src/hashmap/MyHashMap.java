@@ -1,5 +1,7 @@
 package hashmap;
 
+import org.junit.jupiter.params.aggregator.ArgumentsAccessorKt;
+
 import java.util.*;
 
 /**
@@ -28,10 +30,12 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     private int initialCapacity;
     private double loadFactor;
     private int size;
+    private List<K> keysList;
 
     /** Constructors */
     public MyHashMap() {
         // Java's built-in HashMap settings
+        this.keysList = new ArrayList<>();
         this.size = 0;
         this.initialCapacity = 16;
         this.loadFactor = 0.75;
@@ -42,6 +46,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     }
 
     public MyHashMap(int initialCapacity) {
+        this.keysList = new ArrayList<>();
         this.size = 0;
         this.initialCapacity = initialCapacity;
         this.loadFactor = 0.75;
@@ -59,6 +64,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      * @param loadFactor maximum load factor
      */
     public MyHashMap(int initialCapacity, double loadFactor) {
+        this.keysList = new ArrayList<>();
         this.size = 0;
         this.initialCapacity = initialCapacity;
         this.loadFactor = loadFactor;
@@ -101,6 +107,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
         int destBucketIndex = Math.floorMod(hashCode, this.initialCapacity);
         Collection<Node> destBucket = buckets[destBucketIndex];
         if (!containsKey(key)) {
+            this.keysList.add(key);
             // do have to increase size by 1
             Node newNode = new Node(key, value);
             destBucket.add(newNode);
@@ -178,16 +185,47 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
 
     @Override
     public Set<K> keySet() {
-        throw new UnsupportedOperationException();
+        return new HashSet<>(keysList);
     }
 
     @Override
     public V remove(K key) {
-        throw new UnsupportedOperationException();
+        if (containsKey(key)) {
+            V returnValue = get(key);
+            int hashCode = key.hashCode();
+            int bucketIndex = Math.floorMod(hashCode, this.initialCapacity);
+            for (Node n: buckets[bucketIndex]) {
+                if (key.equals(n.key)) {
+                    buckets[bucketIndex].remove(n);
+                    break;
+                }
+            }
+            keysList.remove(key);
+            return returnValue;
+        }
+        return null;
     }
 
     @Override
     public Iterator<K> iterator() {
-        throw new UnsupportedOperationException();
+        return new HashMapIterator();
+    }
+
+    private class HashMapIterator implements Iterator<K> {
+        private int wizPos;
+        HashMapIterator() {
+            wizPos = 0;
+        }
+        @Override
+        public boolean hasNext() {
+            return wizPos < keysList.size();
+        }
+
+        @Override
+        public K next() {
+            K keyReturn = keysList.get(wizPos);
+            wizPos += 1;
+            return keyReturn;
+        }
     }
 }

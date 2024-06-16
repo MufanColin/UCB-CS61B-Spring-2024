@@ -71,4 +71,34 @@ public class TestMyHashMapExtra {
         assertThat(values).containsExactlyElementsIn(keySet);
         assertThat(keySet).containsExactlyElementsIn(values);
     }
+
+    @Test
+    public void iteratorTest() {
+        MyHashMap<String, Integer> q = new MyHashMap<>();
+        q.put("banana", 100);
+        q.put("apple", 50);
+        q.put("watermelon", 30);
+        for (String key: q) {
+            System.out.println("Key: " + key + " Value: " + q.get(key));
+        }
+        System.out.println("----------");
+        q.put("strawberry", 40);
+        q.put("cherry", 25);
+        for (String key: q) {
+            System.out.println("Key: " + key + " Value: " + q.get(key));
+        }
+        System.out.println("----------");
+        q.remove("banana");
+        q.remove("watermelon");
+        for (String key: q) {
+            System.out.println("Key: " + key + " Value: " + q.get(key));
+        }
+        System.out.println("----------");
+        q.put("durian", 300);
+        q.put("dragonfruit", 64);
+        q.put("grapes", 150);
+        for (String key: q) {
+            System.out.println("Key: " + key + " Value: " + q.get(key));
+        }
+    }
 }
