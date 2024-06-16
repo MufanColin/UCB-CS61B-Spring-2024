@@ -114,7 +114,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
                 }
             }
         }
-        double currentLoadFactor = this.size * 1.0 / this.initialCapacity;
+        double currentLoadFactor = size() * 1.0 / this.initialCapacity;
         if (currentLoadFactor > this.loadFactor) {
             resize(this.initialCapacity * 2);
         }
