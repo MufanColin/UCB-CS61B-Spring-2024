@@ -111,6 +111,7 @@ public class RedBlackTree<T extends Comparable<T>> {
      */
     public void insert(T item) {
         root = insert(root, item);
+        // After each insertion, we make sure the color of the root is always black.
         root.isBlack = true;
     }
 
