@@ -3,7 +3,7 @@ package ngrams;
 import edu.princeton.cs.algs4.In;
 
 import java.util.Collection;
-import java.util.TreeMap;
+import java.util.HashMap;
 
 import static ngrams.TimeSeries.MAX_YEAR;
 import static ngrams.TimeSeries.MIN_YEAR;
@@ -20,15 +20,15 @@ import static ngrams.TimeSeries.MIN_YEAR;
  */
 public class NGramMap {
 
-    private final TreeMap<String, TimeSeries> wordsInfoHM;
-    private final TreeMap<Integer, Double> totalCountInfoHM;
+    private final HashMap<String, TimeSeries> wordsInfoHM;
+    private final HashMap<Integer, Double> totalCountInfoHM;
 
     /**
      * Constructs an NGramMap from WORDSFILENAME and COUNTSFILENAME.
      */
     public NGramMap(String wordsFilename, String countsFilename) {
-        wordsInfoHM = new TreeMap<>();
-        totalCountInfoHM = new TreeMap<>();
+        wordsInfoHM = new HashMap<>();
+        totalCountInfoHM = new HashMap<>();
         In in = new In(wordsFilename);
         while (in.hasNextLine()) {
             String line = in.readLine();
@@ -72,9 +72,7 @@ public class NGramMap {
      */
     public TimeSeries totalCountHistory() {
         TimeSeries wordCountTS = new TimeSeries();
-        for (Integer year: totalCountInfoHM.keySet()) {
-            wordCountTS.put(year, totalCountInfoHM.get(year));
-        }
+        wordCountTS.putAll(totalCountInfoHM);
         return wordCountTS;
     }
 
@@ -84,17 +82,8 @@ public class NGramMap {
      * TimeSeries.
      */
     public TimeSeries weightHistory(String word, int startYear, int endYear) {
-        TimeSeries weightHistoryTS = new TimeSeries();
         TimeSeries wordCountTS = this.totalCountHistory(); // denominator
-        if (wordsInfoHM.containsKey(word)) {
-            TimeSeries countHistoryTS = this.countHistory(word, startYear, endYear);
-            for (Integer year: countHistoryTS.years()) {
-                if (wordCountTS.containsKey(year)) {
-                    weightHistoryTS.put(year, wordsInfoHM.get(word).get(year) / wordCountTS.get(year));
-                }
-            }
-        }
-        return weightHistoryTS;
+        return new TimeSeries(wordsInfoHM.get(word).dividedBy(wordCountTS), startYear, endYear);
     }
 
     /**
