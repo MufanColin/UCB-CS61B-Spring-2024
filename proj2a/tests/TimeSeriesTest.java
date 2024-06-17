@@ -55,4 +55,28 @@ public class TimeSeriesTest {
         assertThat(totalPopulation.years()).isEmpty();
         assertThat(totalPopulation.data()).isEmpty();
     }
+
+    @Test
+    public void testDividedBy() {
+        TimeSeries catPopulation = new TimeSeries();
+        catPopulation.put(1991, 50.0);
+        catPopulation.put(1992, 100.0);
+        catPopulation.put(1994, 200.0);
+
+        TimeSeries dogPopulation = new TimeSeries();
+        dogPopulation.put(1991, 100.0);
+        dogPopulation.put(1992, 200.0);
+        dogPopulation.put(1994, 400.0);
+        dogPopulation.put(1995, 500.0);
+
+        TimeSeries quotientPopulation = catPopulation.dividedBy(dogPopulation);
+        for (Integer year: quotientPopulation.years()) {
+            assertThat(quotientPopulation.get(year))
+                    .isWithin(1E-10)
+                    .of(catPopulation.get(year) / dogPopulation.get(year));
+        }
+        // Will generate IllegalArgumentException successfully
+        // catPopulation.put(1990, 25.0);
+        // catPopulation.dividedBy(dogPopulation);
+    }
 } 
