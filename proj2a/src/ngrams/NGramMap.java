@@ -1,12 +1,8 @@
 package ngrams;
 
 import edu.princeton.cs.algs4.In;
-import org.antlr.v4.runtime.tree.Tree;
-import org.apache.hc.core5.annotation.Internal;
 
-import java.sql.Time;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.TreeMap;
 
 import static ngrams.TimeSeries.MAX_YEAR;
