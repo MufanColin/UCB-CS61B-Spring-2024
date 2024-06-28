@@ -1,7 +1,5 @@
 package hashmap;
 
-import org.junit.jupiter.params.aggregator.ArgumentsAccessorKt;
-
 import java.util.*;
 
 /**
@@ -28,9 +26,9 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     /* Instance Variables */
     private Collection<Node>[] buckets;
     private int initialCapacity;
-    private double loadFactor;
+    private final double loadFactor;
     private int size;
-    private List<K> keysList;
+    private final List<K> keysList;
 
     /** Constructors */
     public MyHashMap() {
