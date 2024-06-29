@@ -16,6 +16,14 @@ public class Main {
     public static void main(String[] args) {
         NgordnetServer hns = new NgordnetServer();
 
+        /* The following code might be useful to you.
+
+        String wordFile = "./data/ngrams/top_14377_words.csv";
+        String countFile = "./data/ngrams/total_counts.csv";
+        NGramMap ngm = new NGramMap(wordFile, countFile);
+
+        */
+
         // The following two parameters can be modified.
         NGramMap ngm = new NGramMap(TOP_14337_WORDS_FILE, TOTAL_COUNTS_FILE);
 
