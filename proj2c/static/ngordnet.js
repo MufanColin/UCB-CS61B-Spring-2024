@@ -19,7 +19,7 @@ $(function() {
     const historytext_server = host + '/historytext';
     const hyponyms_server = host + '/hyponyms';
     const hypohist_server = host + '/hypohist';
-//    const hypohisttext_server = host + '/hypohisttext';
+    const hypohisttext_server = host + '/hypohisttext';
     const commonancestors_server = host + '/ancestors';
 
     var ngordnetQueryType = "HYPONYMS";
@@ -37,7 +37,7 @@ $(function() {
     $('#historytext').click(historyTextButton);
     $('#hyponyms').click(hyponymsButton);
     $('#hypohist').click(hypohistButton);
-//    $('#hypohisttext').click(hypohistTextButton);
+    $('#hypohisttext').click(hypohistTextButton);
     $('#commonancestors').click(commonAncestorsButton);
 
     function historyButton() {
@@ -137,6 +137,31 @@ $(function() {
             	console.log("error")
             	console.log(data);
             	plot.src = 'data:image/png;base64,' + data;
+            },
+            dataType: 'json'
+        });
+    }
+
+    function hypohistTextButton() {
+        console.log("hypohist text call");
+        $("#plot").hide();
+        $("#textresult").show();
+
+        var params = get_params();
+        console.log(params);
+        $.get({
+            async: false,
+            url: hypohisttext_server,
+            data: params,
+            success: function(data) {
+                console.log(data)
+
+                textresult.value = data;
+
+            },
+            error: function(data) {
+                console.log("error")
+                console.log(data);
             },
             dataType: 'json'
         });
