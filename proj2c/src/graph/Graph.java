@@ -57,8 +57,19 @@ public class Graph {
         return nodesHM.get(nodeIndex);
     }
 
-    /** Given the index of a node, return all the indexes of its adjacent nodes. */
-    public HashSet<Integer> getAdjNodes(int nodeIndex) {
-        return adjList.get(nodeIndex);
+    /**
+     * Given the index of a node, return all the indexes of its adjacent or parent nodes,
+     * based on hashMap(adjList or predHM).
+     */
+    public HashSet<Integer> getAdjOrParentNodes(HashMap<Integer, HashSet<Integer>> hashMap, int nodeIndex) {
+        return hashMap.get(nodeIndex);
+    }
+
+    public HashMap<Integer, HashSet<Integer>> getAdjList() {
+        return adjList;
+    }
+
+    public HashMap<Integer, HashSet<Integer>> getPredHM() {
+        return predHM;
     }
 }
