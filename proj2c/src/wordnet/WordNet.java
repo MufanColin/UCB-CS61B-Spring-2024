@@ -2,14 +2,17 @@ package wordnet;
 
 import edu.princeton.cs.algs4.In;
 import graph.Graph;
+import ngrams.NGramMap;
+import ngrams.TimeSeries;
 
 import java.util.*;
 
 public class WordNet {
     private final Graph graph;
-
+    private final HashMap<String, Double> totalCountHM;
     public WordNet(String synsetsFile, String hyponymsFile) {
         graph = new Graph();
+        totalCountHM = new HashMap<>();
         // Read from the given synsets file
         In in = new In(synsetsFile);
         while (in.hasNextLine()) {
@@ -76,5 +79,44 @@ public class WordNet {
         List<String> list = new ArrayList<>(commonHyponyms);
         Collections.sort(list);
         return list;
+    }
+
+    /**
+     * Return top k words which are hyponyms of all words in the list (between startYear and endYear).
+     * If k < 0, we should return an empty list,
+     * If k == 0, we should call the method above,
+     * If k > 0, we should select the top k hyponyms of all words in the list.
+     * The k words which occurred the most times in the time range requested.
+     * For words with the same counts, we can break ties alphabetically, or randomly, or not at all.
+     */
+    public List<String> getTopKHyponymsForListOfWords(List<String> words, int startYear, int endYear, int k, NGramMap nGramMap) {
+        List<String> allHyponyms = getHyponymsForListOfWords(words);
+        if (k < 0) {
+            return new ArrayList<>();
+        }
+        if (k > 0) {
+            for (String hyponym: allHyponyms) {
+                totalCountHM.put(hyponym, getTotalCountOfAWordInSomeTimeRange(nGramMap, hyponym, startYear, endYear));
+            }
+            PriorityQueue<String> topKHyponymsPQ =
+                    new PriorityQueue<>((s1, s2) -> Double.compare(totalCountHM.get(s1), totalCountHM.get(s2)));
+            for (String hyponym: allHyponyms) {
+                if (totalCountHM.get(hyponym) > 0) {
+                    topKHyponymsPQ.add(hyponym);
+                }
+                if (topKHyponymsPQ.size() > k) {
+                    topKHyponymsPQ.poll();
+                }
+            }
+            List<String> list = new ArrayList<>(topKHyponymsPQ);
+            Collections.sort(list);
+            return list;
+        }
+        return allHyponyms;
+    }
+
+    private double getTotalCountOfAWordInSomeTimeRange(NGramMap nGramMap, String word, int startYear, int endYear) {
+        TimeSeries wordCountTS = nGramMap.countHistory(word, startYear, endYear);
+        return wordCountTS.data().stream().mapToDouble(Double::doubleValue).sum();
     }
 }
