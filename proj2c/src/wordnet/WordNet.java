@@ -126,6 +126,8 @@ public class WordNet {
     }
 
     private double getTotalCountOfAWordInSomeTimeRange(NGramMap nGramMap, String word, int startYear, int endYear) {
+        // For words not stored in the ngrams data folder, this will return a 0
+        // some words may appear in hyponyms and synset but not in total_xxx_words (e.g., colloacations, etc)
         TimeSeries wordCountTS = nGramMap.countHistory(word, startYear, endYear);
         return wordCountTS.data().stream().mapToDouble(Double::doubleValue).sum();
     }
