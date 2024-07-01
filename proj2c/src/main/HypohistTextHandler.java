@@ -24,12 +24,15 @@ public class HypohistTextHandler extends NgordnetQueryHandler {
         if (k == 0) {
             k = 5;
         }
-        List<String> results = wordNet.getTopKHOrAForListOfWords(words, startYear, endYear, k, nGramMap, wordNet.getGraph().getAdjList());
+        List<String> results = wordNet.getTopKHOrAForListOfWords(
+                words, startYear, endYear, k,
+                nGramMap, wordNet.getGraph().getAdjList()
+        );
         StringBuilder response = new StringBuilder();
         for (String result : results) {
-            response.append(result).append(": ")
-                    .append(this.nGramMap.weightHistory(result, startYear, endYear))
-                    .append("\n");
+            response.append(result).append(": ").
+                    append(this.nGramMap.weightHistory(result, startYear, endYear)).
+                    append("\n");
         }
         return response.toString();
     }

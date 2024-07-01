@@ -2,7 +2,6 @@ package main;
 
 import browser.NgordnetQuery;
 import browser.NgordnetQueryHandler;
-import browser.NgordnetQueryType;
 import ngrams.NGramMap;
 import ngrams.TimeSeries;
 import org.knowm.xchart.XYChart;
@@ -29,7 +28,10 @@ public class HypohistHandler extends NgordnetQueryHandler {
         if (k == 0) {
             k = 5;
         }
-        List<String> results = wordNet.getTopKHOrAForListOfWords(words, startYear, endYear, k, nGramMap, wordNet.getGraph().getAdjList());
+        List<String> results = wordNet.getTopKHOrAForListOfWords(
+                words, startYear, endYear, k,
+                nGramMap, wordNet.getGraph().getAdjList()
+        );
         ArrayList<TimeSeries> lts = new ArrayList<>();
         for (String result : results) {
             lts.add(this.nGramMap.weightHistory(result, startYear, endYear));

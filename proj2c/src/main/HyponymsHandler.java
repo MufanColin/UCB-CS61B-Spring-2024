@@ -26,9 +26,15 @@ public class HyponymsHandler extends NgordnetQueryHandler {
         List<String> response;
         // different mode below
         if (type == NgordnetQueryType.HYPONYMS) {
-            response = wordNet.getTopKHOrAForListOfWords(words, startYear, endYear, k, nGramMap, wordNet.getGraph().getAdjList());
+            response = wordNet.getTopKHOrAForListOfWords(
+                    words, startYear, endYear, k,
+                    nGramMap, wordNet.getGraph().getAdjList()
+            );
         } else {
-            response = wordNet.getTopKHOrAForListOfWords(words, startYear, endYear, k, nGramMap, wordNet.getGraph().getPredHM());
+            response = wordNet.getTopKHOrAForListOfWords(
+                    words, startYear, endYear, k,
+                    nGramMap, wordNet.getGraph().getPredHM()
+            );
         }
         return "[" + String.join(", ", response) + "]";
     }
