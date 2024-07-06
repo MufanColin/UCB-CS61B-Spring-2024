@@ -90,9 +90,28 @@ public class Tetris {
             return;
         }
 
-        // TODO: Implement interactivity, so the user is able to input the keystrokes to move
-        //  the tile and rotate the tile. You'll want to use some provided helper methods here.
-
+        // Implement interactivity, so the user is able to input the keystrokes to move
+        // the tile and rotate the tile.
+        while (StdDraw.hasNextKeyTyped()) {
+            char keyTyped = StdDraw.nextKeyTyped();
+            switch (keyTyped) {
+                case 'a':
+                    movement.tryMove(-1, 0);
+                    break;
+                case 's':
+                    movement.dropDown();
+                    break;
+                case 'd':
+                    movement.tryMove(1, 0);
+                    break;
+                case 'q':
+                    movement.rotateLeft();
+                    break;
+                case 'w':
+                    movement.rotateRight();
+                    break;
+            }
+        }
 
         Tetromino.draw(t, board, t.pos.x, t.pos.y);
     }
@@ -103,8 +122,13 @@ public class Tetris {
      * @param linesCleared
      */
     private void incrementScore(int linesCleared) {
-        // TODO: Increment the score based on the number of lines cleared.
-
+        score += switch(linesCleared) {
+            case 1 -> 100;
+            case 2 -> 300;
+            case 3 -> 500;
+            case 4 -> 800;
+            default -> 0;
+        };
     }
 
     /**
@@ -116,11 +140,40 @@ public class Tetris {
         // Keeps track of the current number lines cleared
         int linesCleared = 0;
 
-        // TODO: Check how many lines have been completed and clear it the rows if completed.
+        // Check how many lines have been completed and clear it the rows if completed.
+        int rowNumber = 0;
+        while (rowNumber < HEIGHT) {
+            if (isFilled(tiles, rowNumber)) {
+                linesCleared += 1;
+                allDropDown(tiles, rowNumber);
+            } else {
+                rowNumber += 1;
+            }
+        }
 
-        // TODO: Increment the score based on the number of lines cleared.
-
+        // Increment the score based on the number of lines cleared.
+        incrementScore(linesCleared);
         fillAux();
+    }
+
+    private boolean isFilled(TETile[][] tiles, int rowNumber) {
+        for (int i = 0; i < WIDTH; i++) {
+            if (tiles[i][rowNumber].equals(Tileset.NOTHING)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void allDropDown(TETile[][] tiles, int rowNumber) {
+        for (int j = rowNumber + 1; j < HEIGHT; j++) {
+            for (int i = 0; i < WIDTH; i++) {
+                tiles[i][j - 1] = tiles[i][j];
+            }
+        }
+        for (int i = 0; i < WIDTH; i++) {
+            tiles[i][HEIGHT - 1] = Tileset.NOTHING;
+        }
     }
 
     /**
@@ -130,10 +183,20 @@ public class Tetris {
     public void runGame() {
         resetActionTimer();
 
-        // TODO: Set up your game loop. The game should keep running until the game is over.
-        // Use helper methods inside your game loop, according to the spec description.
-
-
+        // Set up your game loop. The game should keep running until the game is over.
+        // Use helper methods inside the game loop, according to the spec description.
+        // Also referenced the slide (pseudocode of runGame)
+        spawnPiece();
+        while (!isGameOver()) {
+            if (currentTetromino == null) {
+                clearLines(board);
+                spawnPiece();
+            }
+            updateBoard();
+            renderBoard();
+        }
+        // We can add the following line to exit the program if needed.
+        System.exit(0);
     }
 
     /**
@@ -141,7 +204,8 @@ public class Tetris {
      */
     private void renderScore() {
         // TODO: Use the StdDraw library to draw out the score.
-
+        StdDraw.setPenColor(255, 255, 255);
+        StdDraw.text(7, 19, Integer.toString(score));
     }
 
     /**
