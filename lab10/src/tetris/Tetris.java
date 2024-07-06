@@ -122,7 +122,7 @@ public class Tetris {
      * @param linesCleared
      */
     private void incrementScore(int linesCleared) {
-        score += switch(linesCleared) {
+        score += switch (linesCleared) {
             case 1 -> 100;
             case 2 -> 300;
             case 3 -> 500;
@@ -203,7 +203,7 @@ public class Tetris {
      * Renders the score using the StdDraw library.
      */
     private void renderScore() {
-        // TODO: Use the StdDraw library to draw out the score.
+        // Use the StdDraw library to draw out the score.
         StdDraw.setPenColor(255, 255, 255);
         StdDraw.text(7, 19, Integer.toString(score));
     }
